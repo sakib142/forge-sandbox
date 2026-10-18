@@ -6,9 +6,19 @@ export interface ButtonProps {
   readonly onClick?: () => void;
   readonly variant?: 'primary' | 'secondary';
   readonly disabled?: boolean;
+  /**
+   * Accessible name for buttons whose children carry no text — an icon, an SVG,
+   * a glyph-only span. Omit it when the children are text: the name already
+   * comes from them, and overriding it would make the announced name differ
+   * from the visible one (WCAG 2.5.3, Label in Name).
+   */
+  readonly ariaLabel?: string;
 }
 
-export function Button({ children, onClick, variant = 'primary', disabled = false }: ButtonProps) {
+export function Button({ children, onClick, variant = 'primary', disabled = false, ariaLabel }: ButtonProps) {
+  // A blank label is a caller mistake: emitting it would leave the button with
+  // no name at all, which is worse than falling back to the children.
+  const label = ariaLabel?.trim();
   const style: CSSProperties = {
     padding: `${tokens.space.sm} ${tokens.space.md}`,
     borderRadius: tokens.radius.sm,
@@ -21,7 +31,7 @@ export function Button({ children, onClick, variant = 'primary', disabled = fals
     color: variant === 'primary' ? tokens.color.surface : tokens.color.text,
   };
   return (
-    <button type="button" style={style} onClick={onClick} disabled={disabled}>
+    <button type="button" style={style} onClick={onClick} disabled={disabled} aria-label={label || undefined}>
       {children}
     </button>
   );

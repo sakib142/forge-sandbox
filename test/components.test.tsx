@@ -31,6 +31,62 @@ describe('Button', () => {
     screen.getByRole('button').click();
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it('is announced by ariaLabel when one is given', () => {
+    render(<Button ariaLabel="Close dialog">×</Button>);
+    expect(screen.getByRole('button', { name: 'Close dialog' })).toHaveAttribute(
+      'aria-label',
+      'Close dialog',
+    );
+  });
+
+  // The prop is opt-in: text children already name the button, and overriding
+  // that would make the announced name differ from the visible one.
+  it('keeps taking its name from the children without ariaLabel', () => {
+    render(<Button>Place order</Button>);
+    expect(screen.getByRole('button', { name: 'Place order' })).toBeInTheDocument();
+  });
+
+  it('emits no aria-label attribute at all without ariaLabel', () => {
+    render(<Button>Place order</Button>);
+    expect(screen.getByRole('button').hasAttribute('aria-label')).toBe(false);
+  });
+
+  // The case the prop exists for: children carrying no text.
+  it('names a button whose children render no text', () => {
+    render(
+      <Button ariaLabel="Dismiss">
+        <span aria-hidden="true">×</span>
+      </Button>,
+    );
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument();
+  });
+
+  it('falls back to the children when ariaLabel is blank', () => {
+    render(<Button ariaLabel="   ">Save</Button>);
+    const button = screen.getByRole('button', { name: 'Save' });
+    expect(button.hasAttribute('aria-label')).toBe(false);
+  });
+
+  it('falls back to the children when ariaLabel is empty', () => {
+    render(<Button ariaLabel="">Save</Button>);
+    const button = screen.getByRole('button', { name: 'Save' });
+    expect(button.hasAttribute('aria-label')).toBe(false);
+  });
+
+  it('still calls onClick when an ariaLabel is given', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick} ariaLabel="Close dialog">×</Button>);
+    screen.getByRole('button', { name: 'Close dialog' }).click();
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it('still does not fire when disabled with an ariaLabel', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick} ariaLabel="Close dialog" disabled>×</Button>);
+    screen.getByRole('button', { name: 'Close dialog' }).click();
+    expect(onClick).not.toHaveBeenCalled();
+  });
 });
 
 describe('OrderList', () => {
