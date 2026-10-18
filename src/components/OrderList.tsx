@@ -20,7 +20,41 @@ export interface OrderListProps {
 export function OrderList({ orders, loading = false, error }: OrderListProps) {
   if (loading) return <p style={{ color: tokens.color.textMuted }}>Loading orders…</p>;
   if (error !== undefined) return <p role="alert" style={{ color: tokens.color.danger }}>{error}</p>;
-  if (orders.length === 0) return <p style={{ color: tokens.color.textMuted }}>No orders yet.</p>;
+  if (orders.length === 0) {
+    return (
+      <div
+        role="status"
+        style={{
+          padding: tokens.space.xl,
+          border: `1px solid ${tokens.color.border}`,
+          borderRadius: tokens.radius.md,
+          textAlign: 'center',
+        }}
+      >
+        <p
+          style={{
+            margin: 0,
+            fontSize: tokens.font.heading,
+            fontWeight: tokens.font.weightBold,
+            color: tokens.color.text,
+          }}
+        >
+          No orders yet
+        </p>
+        <p
+          style={{
+            margin: 0,
+            marginTop: tokens.space.sm,
+            fontSize: tokens.font.body,
+            fontWeight: tokens.font.weightRegular,
+            color: tokens.color.textMuted,
+          }}
+        >
+          Orders will appear here once they&rsquo;re placed.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <ul aria-label="Orders" style={{ listStyle: 'none', margin: 0, padding: 0 }}>

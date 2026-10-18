@@ -50,9 +50,67 @@ describe('OrderList', () => {
     expect(screen.getByText(/no orders yet/i)).toBeInTheDocument();
   });
 
+  // The complaint was that the empty case read as "nothing rendered", so the
+  // block has to carry visible weight: a heading-style line plus supporting copy.
+  it('gives the empty state a heading line and supporting copy', () => {
+    render(<OrderList orders={[]} />);
+    const heading = screen.getByText(/no orders yet/i);
+    expect(heading).toHaveStyle({
+      fontSize: tokens.font.heading,
+      fontWeight: String(tokens.font.weightBold),
+      color: tokens.color.text,
+    });
+    const supporting = screen.getByText(/orders will appear here/i);
+    expect(supporting).toBeInTheDocument();
+    expect(supporting).not.toBe(heading);
+    expect(supporting).toHaveStyle({
+      fontSize: tokens.font.body,
+      color: tokens.color.textMuted,
+    });
+  });
+
+  // role="status" rather than role="alert": informational, not a failure.
+  it('announces the empty state as a status, not an alert', () => {
+    render(<OrderList orders={[]} />);
+    const status = screen.getByRole('status');
+    expect(status).toHaveTextContent(/no orders yet/i);
+    expect(status).toHaveTextContent(/orders will appear here/i);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('styles the empty state from tokens', () => {
+    render(<OrderList orders={[]} />);
+    expect(screen.getByRole('status')).toHaveStyle({
+      padding: tokens.space.xl,
+      border: `1px solid ${tokens.color.border}`,
+      borderRadius: tokens.radius.md,
+    });
+  });
+
+  it('does not show the empty state when there are orders', () => {
+    render(<OrderList orders={[order(), order({ id: 'ord-002' })]} />);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByText(/no orders yet/i)).not.toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  });
+
+  it('prefers the loading state over the empty state', () => {
+    render(<OrderList orders={[]} loading />);
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByText(/no orders yet/i)).not.toBeInTheDocument();
+  });
+
   it('shows an error state with an alert role', () => {
     render(<OrderList orders={[]} error="Could not load orders" />);
     expect(screen.getByRole('alert')).toHaveTextContent('Could not load orders');
+  });
+
+  it('prefers the error state over the empty state', () => {
+    render(<OrderList orders={[]} error="Could not load orders" />);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByText(/no orders yet/i)).not.toBeInTheDocument();
   });
 });
 
