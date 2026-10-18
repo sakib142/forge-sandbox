@@ -17,6 +17,7 @@ export const tokens = {
   },
   space: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
   radius: { sm: '4px', md: '8px' },
+  borderWidth: { thin: '1px' },
   font: {
     body: '14px',
     heading: '20px',
