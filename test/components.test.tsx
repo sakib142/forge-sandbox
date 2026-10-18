@@ -82,7 +82,7 @@ describe('OrderList', () => {
     render(<OrderList orders={[]} />);
     expect(screen.getByRole('status')).toHaveStyle({
       padding: tokens.space.xl,
-      border: `1px solid ${tokens.color.border}`,
+      border: `${tokens.borderWidth.thin} solid ${tokens.color.border}`,
       borderRadius: tokens.radius.md,
     });
   });
