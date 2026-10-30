@@ -22,25 +22,42 @@ export function OrderList({ orders, loading = false, error }: OrderListProps) {
   if (error !== undefined) return <p role="alert" style={{ color: tokens.color.danger }}>{error}</p>;
   if (orders.length === 0) return <p style={{ color: tokens.color.textMuted }}>No orders yet.</p>;
 
+  const count = orders.length;
+
   return (
-    <ul aria-label="Orders" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-      {orders.map((order) => (
-        <li
-          key={order.id}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: tokens.space.md,
-            borderBottom: `1px solid ${tokens.color.border}`,
-            fontSize: tokens.font.body,
-            color: tokens.color.text,
-          }}
-        >
-          <span>{order.id}</span>
-          <span>{order.status}</span>
-          <span>${order.total.toFixed(2)}</span>
-        </li>
-      ))}
-    </ul>
+    <>
+      <p
+        role="status"
+        style={{
+          margin: 0,
+          padding: tokens.space.sm,
+          color: tokens.color.textMuted,
+          fontSize: tokens.font.body,
+        }}
+      >
+        {count} {count === 1 ? 'order' : 'orders'}
+      </p>
+      <ul aria-label="Orders" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+        {orders.map((order) => (
+          <li
+            key={order.id}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: tokens.space.md,
+              borderBottomWidth: 1,
+              borderBottomStyle: 'solid',
+              borderBottomColor: tokens.color.border,
+              fontSize: tokens.font.body,
+              color: tokens.color.text,
+            }}
+          >
+            <span>{order.id}</span>
+            <span>{order.status}</span>
+            <span>${order.total.toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
