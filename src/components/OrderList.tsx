@@ -45,7 +45,9 @@ export function OrderList({ orders, loading = false, error }: OrderListProps) {
               display: 'flex',
               justifyContent: 'space-between',
               padding: tokens.space.md,
-              borderBottom: `1px solid ${tokens.color.border}`,
+              borderBottomWidth: 1,
+              borderBottomStyle: 'solid',
+              borderBottomColor: tokens.color.border,
               fontSize: tokens.font.body,
               color: tokens.color.text,
             }}

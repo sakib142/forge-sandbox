@@ -135,8 +135,6 @@ describe('design tokens', () => {
   it('are the only source of colours and sizes in OrderList', () => {
     const source = readFileSync('src/components/OrderList.tsx', 'utf8');
     expect(source.match(/#[0-9a-fA-F]{3,8}\b/g)).toBeNull();
-    // The 1px hairline predates this component's tokens and has no width token
-    // to read from; nothing else may state a pixel value.
-    expect(source.match(/\d+px/g) ?? []).toEqual(['1px']);
+    expect(source.match(/\d+px/g)).toBeNull();
   });
 });
