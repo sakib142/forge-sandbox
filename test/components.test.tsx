@@ -54,6 +54,53 @@ describe('OrderList', () => {
     render(<OrderList orders={[]} error="Could not load orders" />);
     expect(screen.getByRole('alert')).toHaveTextContent('Could not load orders');
   });
+
+  it('renders a heading from the title prop alongside the orders', () => {
+    render(<OrderList title="Recent orders" orders={[order(), order({ id: 'ord-002' })]} />);
+    expect(screen.getByRole('heading', { name: 'Recent orders' })).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  });
+
+  it('puts the heading before the list in document order', () => {
+    render(<OrderList title="Recent orders" orders={[order(), order({ id: 'ord-002' })]} />);
+    const heading = screen.getByRole('heading', { name: 'Recent orders' });
+    const list = screen.getByRole('list');
+    expect(heading.compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('renders no heading when no title is given', () => {
+    render(<OrderList orders={[order(), order({ id: 'ord-002' })]} />);
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  });
+
+  // A blank title is no title; an empty heading is an accessibility defect.
+  it.each([['', 'empty'], ['   ', 'whitespace-only']])(
+    'renders no heading for a %s title (%s)',
+    (title) => {
+      render(<OrderList title={title} orders={[order()]} />);
+      expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+    },
+  );
+
+  // The heading belongs to the region, so it survives every one of the states.
+  it('keeps the heading in the loading state', () => {
+    render(<OrderList title="Recent orders" orders={[]} loading />);
+    expect(screen.getByRole('heading', { name: 'Recent orders' })).toBeInTheDocument();
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  it('keeps the heading in the error state', () => {
+    render(<OrderList title="Recent orders" orders={[]} error="Could not load orders" />);
+    expect(screen.getByRole('heading', { name: 'Recent orders' })).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not load orders');
+  });
+
+  it('keeps the heading in the empty state', () => {
+    render(<OrderList title="Recent orders" orders={[]} />);
+    expect(screen.getByRole('heading', { name: 'Recent orders' })).toBeInTheDocument();
+    expect(screen.getByText(/no orders yet/i)).toBeInTheDocument();
+  });
 });
 
 describe('design tokens', () => {
@@ -63,5 +110,13 @@ describe('design tokens', () => {
     render(<OrderList orders={[order()]} />);
     const item = screen.getByRole('listitem');
     expect(item).toHaveStyle({ padding: tokens.space.md });
+  });
+
+  it('style the heading from tokens', () => {
+    render(<OrderList title="Recent orders" orders={[order()]} />);
+    expect(screen.getByRole('heading', { name: 'Recent orders' })).toHaveStyle({
+      fontSize: tokens.font.heading,
+      color: tokens.color.text,
+    });
   });
 });

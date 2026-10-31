@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { tokens } from '../tokens.js';
 
 export interface Order {
@@ -8,16 +9,24 @@ export interface Order {
 }
 
 export interface OrderListProps {
+  readonly title?: string;
   readonly orders: readonly Order[];
   readonly loading?: boolean;
   readonly error?: string;
 }
 
+const headingStyle: CSSProperties = {
+  margin: `0 0 ${tokens.space.md} 0`,
+  fontSize: tokens.font.heading,
+  fontWeight: tokens.font.weightBold,
+  color: tokens.color.text,
+};
+
 /**
  * Every state a real list has: loading, error, empty, and populated. A design
  * that shows only the populated case still has to account for the rest.
  */
-export function OrderList({ orders, loading = false, error }: OrderListProps) {
+function OrderListBody({ orders, loading = false, error }: Omit<OrderListProps, 'title'>) {
   if (loading) return <p style={{ color: tokens.color.textMuted }}>Loading orders…</p>;
   if (error !== undefined) return <p role="alert" style={{ color: tokens.color.danger }}>{error}</p>;
   if (orders.length === 0) return <p style={{ color: tokens.color.textMuted }}>No orders yet.</p>;
@@ -42,5 +51,21 @@ export function OrderList({ orders, loading = false, error }: OrderListProps) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/**
+ * The heading belongs to the list region, not to the populated case, so it
+ * renders above every one of the four states. A blank title is no title: an
+ * empty heading is a defect rather than a decoration.
+ */
+export function OrderList({ title, ...body }: OrderListProps) {
+  const heading = title !== undefined && title.trim() !== '' ? title : undefined;
+
+  return (
+    <>
+      {heading !== undefined && <h2 style={headingStyle}>{heading}</h2>}
+      <OrderListBody {...body} />
+    </>
   );
 }
