@@ -78,6 +78,20 @@ const messageCellStyle: CSSProperties = {
   color: tokens.color.textMuted,
 };
 
+const captionStyle: CSSProperties = {
+  padding: tokens.space.md,
+  fontSize: tokens.font.body,
+  fontWeight: tokens.font.weightRegular,
+  color: tokens.color.textMuted,
+};
+
+const errorStyle: CSSProperties = {
+  padding: tokens.space.md,
+  fontSize: tokens.font.body,
+  fontWeight: tokens.font.weightRegular,
+  color: tokens.color.danger,
+};
+
 function compare(a: Order, b: Order, column: SortColumn): number {
   switch (column) {
     case 'total':
@@ -187,35 +201,18 @@ export function OrderList({
             ))}
           </tbody>
         </table>
-        <p
-          style={{
-            margin: 0,
-            padding: tokens.space.md,
-            fontSize: tokens.font.body,
-            fontWeight: tokens.font.weightRegular,
-            color: tokens.color.textMuted,
-          }}
-        >
-          Loading orders…
-        </p>
+        {/* A div rather than a p, so the caption needs no margin reset: there
+            is no spacing token for zero, and a raw 0 would go around them. */}
+        <div style={captionStyle}>Loading orders…</div>
       </div>
     );
   }
 
   if (error !== undefined) {
     return (
-      <p
-        role="alert"
-        style={{
-          margin: 0,
-          padding: tokens.space.md,
-          fontSize: tokens.font.body,
-          fontWeight: tokens.font.weightRegular,
-          color: tokens.color.danger,
-        }}
-      >
+      <div role="alert" style={errorStyle}>
         {error}
-      </p>
+      </div>
     );
   }
 

@@ -344,4 +344,28 @@ describe('design tokens', () => {
       color: tokens.color.textMuted,
     });
   });
+
+  // The loading and error states carry text of their own, and a margin reset
+  // is the value most easily written raw, so both are pinned to tokens.
+  it('style the loading caption too', () => {
+    render(<OrderList orders={[]} loading />);
+    const caption = screen.getByText('Loading orders…');
+    expect(caption).toHaveStyle({
+      padding: tokens.space.md,
+      fontSize: tokens.font.body,
+      color: tokens.color.textMuted,
+    });
+    expect(caption.style.margin).toBe('');
+  });
+
+  it('style the error state too', () => {
+    render(<OrderList orders={[]} error="Could not load orders" />);
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveStyle({
+      padding: tokens.space.md,
+      fontSize: tokens.font.body,
+      color: tokens.color.danger,
+    });
+    expect(alert.style.margin).toBe('');
+  });
 });
